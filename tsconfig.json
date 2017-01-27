@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "target": "es5",
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "sourceMap": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "removeComments": false,
+    "noImplicitAny": true,
+    "suppressImplicitAnyIndexErrors": true,
+    // TODO: below should not be neccessary with awesome-typescript-loader 3.x
+    // See https://github.com/Microsoft/TypeScript/issues/9725
+    "typeRoots": [
+      "node_modules/@types"
+    ]
+  }
+}

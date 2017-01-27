@@ -2,18 +2,22 @@ var HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports =
     {
-        entry: "./app/demo.js",
+        entry: "./app/demo.ts",
         output: {
             path: __dirname + "/dist",
             filename: "bundle.[hash].js"
         },
 
         resolve: {
-            extensions: ['', '.js']
+            extensions: ['', '.ts', '.js']
         },
 
         module: {
             loaders: [
+                {
+                    test: /\.ts$/,
+                    loaders: ['awesome-typescript-loader']
+                },
                 {
                     test: /\.html$/,
                     loader: 'html'
