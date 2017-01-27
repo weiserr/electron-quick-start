@@ -1,17 +1,33 @@
 var HtmlWebpackPlugin = require('html-webpack-plugin');
 
-module.exports = 
-{
-    context: __dirname,
-    entry: "./app/demo.js",
-    output: {
-        path: __dirname + "/dist",
-        filename: "bundle.js"
-    },
+module.exports =
+    {
+        entry: "./app/demo.js",
+        output: {
+            path: __dirname + "/dist",
+            filename: "bundle.js"
+        },
 
-    plugins: [
-        new HtmlWebpackPlugin({
-            template: 'index.html'
-        })
-    ]
-}
+        resolve: {
+            extensions: ['', '.js']
+        },
+
+        module: {
+            loaders: [
+                {
+                    test: /\.html$/,
+                    loader: 'html'
+                },
+                {
+                    test: /\.(png|jpe?g|gif|svg|woff|woff2|ttf|eot|ico)$/,
+                    loader: 'file?name=assets/[name].[ext]'
+                }
+            ]
+        },
+
+        plugins: [
+            new HtmlWebpackPlugin({
+                template: 'index.html'
+            })
+        ]
+    }
