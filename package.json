@@ -27,6 +27,7 @@
     "webpack-dev-server": "^1.16.2"
   },
   "dependencies": {
+    "blob-util": "^1.2.1",
     "pouchdb-browser": "^6.1.1"
   }
 }

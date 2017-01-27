@@ -5,7 +5,7 @@ module.exports =
         entry: "./app/demo.js",
         output: {
             path: __dirname + "/dist",
-            filename: "bundle.js"
+            filename: "bundle.[hash].js"
         },
 
         resolve: {
@@ -20,7 +20,7 @@ module.exports =
                 },
                 {
                     test: /\.(png|jpe?g|gif|svg|woff|woff2|ttf|eot|ico)$/,
-                    loader: 'file?name=assets/[name].[ext]'
+                    loader: 'file?name=assets/[name].[hash].[ext]'
                 }
             ]
         },
@@ -29,5 +29,8 @@ module.exports =
             new HtmlWebpackPlugin({
                 template: 'index.html'
             })
-        ]
+        ],
+
+        target: 'web'
+        // target: 'electron-renderer'
     }
