@@ -1,4 +1,6 @@
 <h1>Hello {{name}}</h1>
 
-<img id="cat" src="../assets/meowth.png" />
-<pre id="display"></pre>
+<img id="cat" [src]="originalSrc" />
+<pre id="display">{{display}}</pre>
+<img id="secondCat" [src]="base64Src" />
+<img id="thirdCat" [src]="blobSrc" />

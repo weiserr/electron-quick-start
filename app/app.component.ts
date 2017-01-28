@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 
 const PouchDB = require('pouchdb-browser');
 const blobUtil = require('blob-util');
@@ -8,39 +9,53 @@ const blobUtil = require('blob-util');
     templateUrl: 'app.component.html'
 })
 export class AppComponent {
-    name = 'Angular';
+    domSanitizer: DomSanitizer;
+    name: string;
+    originalSrc: string;
+    base64Src: string;
+    blobSrc: SafeUrl;
+    display: string;
+
+    constructor(domSanitizer: DomSanitizer) {
+        this.domSanitizer = domSanitizer;
+        this.name = 'Angular';
+        this.originalSrc = '../assets/meowth.png';
+        this.display = '';
+    }
 
     ngOnInit(): void {
-        new PouchDB('sample').destroy().then(function () {
-            return new PouchDB('sample');
-        }).then(function (db: any) {
+        new PouchDB('sample')
+            .destroy()
+            .then(() => new PouchDB('sample'))
+            .then((db: any) => {
+                blobUtil.imgSrcToBlob(this.originalSrc)
+                    .then((blob: Blob) => {
+                        this.display += 'Read the content of the img as a blob of size ' + blob.size;
 
-            //
-            // IMPORTANT CODE STARTS HERE
-            //
+                        // return db.putAttachment('meowth', 'meowth', blob, 'image/png');
+                        return db.put({
+                            _id: 'meowth',
+                            _attachments: {
+                                'meowth': {
+                                    content_type: 'image/png',
+                                    data: blob
+                                }
+                            }
+                        });
+                    })
+                    .then(() => db.get('meowth', { attachments: true, binary: false }))
+                    .then((doc: any) => {
+                        this.base64Src = `data:image/png;base64,${doc._attachments['meowth'].data}`;
+                        this.display += '\nGot our doc with an attachment! It looks like this: ' + JSON.stringify(doc);
+                        this.display += '\nAnd the base64-encoded content of the image is this: ' + JSON.stringify(doc._attachments['meowth'].data);
 
-            var display = document.getElementById('display');
-            var catImage = document.getElementById('cat') as HTMLImageElement;
-
-            // we're using blobUtil because it actually works cross-browser
-            // blob-util is here: https://github.com/nolanlawson/blob-util
-            blobUtil.imgSrcToBlob(catImage.src).then(function (blob: any) {
-                document.getElementById('display').innerHTML = 'Read the content of the img as a blob of size ' + blob.size;
-                return db.putAttachment('meowth', 'meowth.png', blob, 'image/png');
-            }).then(function () {
-                return db.get('meowth', { attachments: true, binary: false });
-            }).then(function (doc: any) {
-                display.innerHTML += '\nGot our doc with an attachment! It looks like this: ' + JSON.stringify(doc);
-                display.innerHTML += '\nAnd the base64-encoded content of the image is this: ' + JSON.stringify(doc._attachments['meowth.png'].data);
-                return db.getAttachment('meowth', 'meowth.png');
-            }).then(function (blob: any) {
-                var url = URL.createObjectURL(blob);
-                var img = document.createElement('img');
-                img.src = url;
-                document.body.appendChild(img);
-                display.innerHTML += "\nThe second image is our stored blob, after reading it out of the database.";
+                        return db.getAttachment('meowth', 'meowth');
+                    })
+                    .then((blob: Blob) => {
+                        this.blobSrc = this.domSanitizer.bypassSecurityTrustUrl(URL.createObjectURL(blob));
+                        this.display += "\nThe second image is our stored blob, after reading it out of the database.";
+                    });
             });
-        });
     }
 
 }
